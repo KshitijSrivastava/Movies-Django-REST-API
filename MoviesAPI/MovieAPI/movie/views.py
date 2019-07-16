@@ -40,6 +40,32 @@ class MovieList(generics.ListCreateAPIView, generics.CreateAPIView):
     serializer_class = MovieSerializer
     pagination_class = PaginationMovie
 
+@api_view(['GET'])
+def movie_delete(request):
+    movie_name = request.GET.get('movie_name', None)
+    year = request.GET.get('year', None)
+
+    if movie_name and year:
+        movie_objects = Movie.objects.filter(movie_name = movie_name).filter(year = year)
+    elif movie_name and year is None:
+        movie_objects = Movie.objects.filter(movie_name = movie_name)
+    elif movie_name is None and year:
+        movie_objects = Movie.objects.filter(year = year)
+    else:
+        return Response("No Movie Data Deleted", status=status.HTTP_201_CREATED)
+
+    if len(movie_objects) == 0:
+        return Response("No Movie Data Deleted", status=status.HTTP_201_CREATED)
+    else:
+        print(movie_objects)
+        serializer = MovieSerializer(movie_objects, many=True)
+        print(serializer)
+        movie_objects.delete()
+        return Response("Movies Deleted from database", status=status.HTTP_201_CREATED)
+
+class MovieDelete():
+    pass
+
 """
 class MovieList(APIView):
      def get(self, request, format=None):
