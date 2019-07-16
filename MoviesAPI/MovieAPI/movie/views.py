@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
+import json
+
 
 from movie.serializers import MovieSerializer
 from movie.models import Movie
@@ -63,21 +65,10 @@ def movie_delete(request):
         movie_objects.delete()
         return Response("Movies Deleted from database", status=status.HTTP_201_CREATED)
 
-class MovieDelete():
-    pass
-
-"""
-class MovieList(APIView):
-     def get(self, request, format=None):
-         movies = Movie.objects.all()
-         serializer = MovieSerializer(movies, many=True)
-         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = MovieSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
+@api_view(['POST'])
+def movie_insert_list(request):
+    data = request.POST.get('list')
+    final_data = eval(data)
+    for obj in final_data:
+        Movie.objects.create(movie_name=obj['movie_name'], year=obj['year'])
+    return Response("List of Movies Added from database", status=status.HTTP_201_CREATED)
